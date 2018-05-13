@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: @application.name@
+  profiles:
+    active: dev
+  # spring.cloud.config.enabled: false : prevents configuration server from fetching its own configuration on startup
+  cloud:
+    config:
+      enabled: false
+      server:
+        git:
+          uri: ${CONFIG_SERVER_GIT_URI:https://github.com/senizm/spring-cloud-properties.git}
+
+info:
+  build:
+    name: @project.name@
+    description: @project.description@
+    group: @project.groupId@
+    artifact: @project.artifactId@
+    version: @project.version@
+
+encrypt:
+  failOnError: true
+  keyStore:
+    location: ${CONFIG_SERVER_KEYSTORE_LOCATION:classpath:/keys/keystore.jks}
+    password: ${CONFIG_SERVER_KEYSTORE_PASSWORD:senizmKey}
+    alias: ${CONFIG_SERVER_KEYSTORE_ALIAS:configserverkey}
+
+server:
+  port: ${CONFIG_SERVER_PORT:8888}
+  contextPath: /${spring.application.name}
+
+security:
+  user:
+    name: ${CONFIG_SERVER_USERNAME:senizm}
+    password: ${CONFIG_SERVER_PASSWORD:senizmadm}
+
+management:
+  context-path: /admin
+
+---
+### Properties for dev profile
+### Dev profile is used on the following environments:
+###  a. During local development done by developers
+### In short, this profile is mainly used for development environments.
+###
+spring:
+  profiles: dev
+
+---
+### Properties for test profile
+### Test profile is used on the following environments:
+###  a. Local integration tests done by developers
+###  b. Remote integration tests done automatically by CI servers
+### In short, this profile is mainly used by integration tests
+###  whether they are run manually by the developers, or automatically by the CI servers.
+### CI servers may choose to override this settings should they need to run integration tests on another database.
+###
+spring:
+  profiles: test
+
+---
+### Properties for production profile
+### Production profile is used on the following environments:
+###  a. Production deployments
+###  b. User Acceptance Test deployments
+### UAT deployment only differs in application level configuration such as IP addresses, FTP username and passwords, etc.
+### All application level configuration parameters should be specified on the datasource.
+### Therefore, static module configuration should not differ between UAT and production deployments.
+###
+spring:
+  profiles: prod
