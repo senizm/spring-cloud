@@ -3,10 +3,9 @@ spring:
     name: @application.name@
   profiles:
     active: dev
-  # spring.cloud.config.enabled: false : prevents configuration server from fetching its own configuration on startup
   cloud:
     config:
-      enabled: false
+      enabled: false # prevents from fetching self configuration
       server:
         git:
           uri: ${CONFIG_SERVER_GIT_URI:https://github.com/senizm/spring-cloud-properties.git}
@@ -18,6 +17,10 @@ info:
     group: @project.groupId@
     artifact: @project.artifactId@
     version: @project.version@
+    
+server:
+  port: ${CONFIG_SERVER_PORT:8888}
+  contextPath: /${spring.application.name}
 
 encrypt:
   failOnError: true
@@ -25,10 +28,6 @@ encrypt:
     location: ${CONFIG_SERVER_KEYSTORE_LOCATION:classpath:/keys/keystore.jks}
     password: ${CONFIG_SERVER_KEYSTORE_PASSWORD:senizmKey}
     alias: ${CONFIG_SERVER_KEYSTORE_ALIAS:configserverkey}
-
-server:
-  port: ${CONFIG_SERVER_PORT:8888}
-  contextPath: /${spring.application.name}
 
 security:
   user:
